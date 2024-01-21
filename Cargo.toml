@@ -1,0 +1,16 @@
+[package]
+name = "cubey"
+version = "0.1.0"
+edition = "2021"
+repository = "https://github.com/Cubeyond/cubey"
+readme = "README.md"
+
+[dependencies]
+# Runtime
+poise = "0.6.1"
+dotenvy = "0.15.7"
+tokio = { version = "1.35.1", features = ["macros", "rt-multi-thread"] }
+
+# Logger
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
