@@ -1,3 +1,8 @@
+mod utils;
+mod commands;
+
+use crate::commands::skyblock::get_player_uuid;
+
 use poise::serenity_prelude as serenity;
 
 use dotenvy;
@@ -5,22 +10,9 @@ use tokio::time::Instant;
 use tracing::{error, info, level_filters::LevelFilter, subscriber, warn};
 use tracing_subscriber::{fmt::Subscriber, EnvFilter};
 
-
 struct Data {} // User data, which is stored and accessible in all command invocations
 type Error = Box<dyn std::error::Error + Send + Sync>;
 type Context<'a> = poise::Context<'a, Data, Error>;
-
-/// Displays your or another user's account creation date
-#[poise::command(slash_command, prefix_command)]
-async fn age(
-    ctx: Context<'_>,
-    #[description = "Selected user"] user: Option<serenity::User>,
-) -> Result<(), Error> {
-    let u = user.as_ref().unwrap_or_else(|| ctx.author());
-    let response = format!("{}'s account was created at {}", u.name, u.created_at());
-    ctx.say(response).await?;
-    Ok(())
-}
 
 #[tokio::main]
 async fn main() {
@@ -38,7 +30,9 @@ async fn main() {
 
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
-            commands: vec![age()],
+            commands: vec![
+                get_player_uuid::uuid()
+            ],
             ..Default::default()
         })
         .setup(|ctx, _ready, framework| {
@@ -57,8 +51,6 @@ async fn main() {
 
 fn initialise_subscriber() {
     let start_time = Instant::now();
-
-    tracing_subscriber::fmt::init();
 
     let rust_log = match dotenvy::var("RUST_LOG") {
         Ok(level) => level,
@@ -90,5 +82,5 @@ fn initialise_subscriber() {
     }
 
     let elapsed_time = start_time.elapsed();
-    info!("Initalised subscriber in {elapsed_time:.2?}")
+    info!("Initalised logger in {elapsed_time:.2?}");
 }
